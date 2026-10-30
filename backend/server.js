@@ -1,16 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
 
-const counsellingRoutes = require('./routes/counsellingRoutes');
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Enable CORS for frontend requests (supports local development and deployed frontend)
+// Enable CORS for local development and deployed frontend
 const allowedOrigins = [
+  'https://main.d2u7xywy5yab9fb.amplifyapp.com',
   'https://campus-wellbeing-1kr4.vercel.app',
   'https://campus-wellbeing.vercel.app',
   'http://localhost:3000',
@@ -25,7 +16,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+    // Allow requests without an Origin header (curl, server-to-server, etc.)
     if (!origin) return callback(null, true);
 
     const normalizedOrigin = origin.trim().replace(/\/+$/, '');
@@ -52,46 +43,6 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-// Apply CORS middleware before any routes and parsers
+// Apply CORS before routes and parsers.
+// This also handles browser OPTIONS preflight requests.
 app.use(cors(corsOptions));
-
-// Explicitly handle OPTIONS preflight requests across all endpoints
-app.options('*', cors(corsOptions));
-
-// Middleware for parsing JSON requests
-app.use(express.json());
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api', authRoutes);
-app.use('/api', counsellingRoutes);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    message: 'College ERP Counselling backend is running successfully.'
-  });
-});
-
-// 404 handler for API routes - ensure JSON is returned, never HTML
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `API route not found: ${req.method} ${req.originalUrl}`
-  });
-});
-
-// Global error handler - ensure JSON is returned
-app.use((err, req, res, next) => {
-  console.error('Unhandled server error:', err);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal server error'
-  });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server started and listening on http://localhost:${PORT}`);
-});
