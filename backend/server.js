@@ -1,7 +1,7 @@
 
 // Enable CORS for local development and deployed frontend
 const allowedOrigins = [
-  'https://main.d2u7xywy5yab9fb.amplifyapp.com',
+  'https://main.d2u7xyw5yab9fb.amplifyapp.com',
   'https://campus-wellbeing-1kr4.vercel.app',
   'https://campus-wellbeing.vercel.app',
   'http://localhost:3000',
